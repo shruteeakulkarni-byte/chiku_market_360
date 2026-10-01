@@ -2,139 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>Chiku's Magical Market</title>
 
 <style>
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-    font-family: Arial, sans-serif;
-    touch-action: none;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: Arial, sans-serif;
 }
 
 #viewer {
-    position: fixed;
-    inset: 0;
+  position: fixed;
+  inset: 0;
 }
 
 canvas {
-    display: block;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
 }
 
-#top {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    pointer-events: none;
+.header {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
 }
 
-.badge {
-    background: rgba(255,255,255,.94);
-    padding: 10px 15px;
-    border-radius: 22px;
-    font-weight: bold;
-    box-shadow: 0 3px 12px rgba(0,0,0,.25);
+.title {
+  background: white;
+  padding: 16px 24px;
+  border-radius: 30px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-#counter {
-    background: #ffd43b;
-    color: #503900;
+.score {
+  background: #ffd43b;
+  padding: 16px 24px;
+  border-radius: 30px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-#message {
-    position: fixed;
-    left: 50%;
-    bottom: 65px;
-    transform: translateX(-50%);
-    z-index: 10;
-    background: rgba(0,0,0,.75);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 25px;
-    text-align: center;
-    font-size: 14px;
-    white-space: nowrap;
+.message {
+  position: fixed;
+  left: 22px;
+  bottom: 28px;
+  z-index: 10;
+  background: white;
+  padding: 16px 22px;
+  border-radius: 22px;
+  max-width: 430px;
+  font-size: 18px;
+  line-height: 1.4;
 }
 
-#chiku {
-    position: fixed;
-    left: 12px;
-    bottom: 15px;
-    z-index: 15;
-    background: white;
-    border-radius: 18px;
-    padding: 10px 14px;
-    width: 240px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.3);
-    font-size: 14px;
+.message strong {
+  color: #e67e22;
+  font-size: 20px;
 }
 
-#chiku b {
-    color: #ed7b20;
+.loading {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
 }
 
-.hotspot {
-    position: fixed;
-    z-index: 20;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    border: 4px solid white;
-    background: #ffd43b;
-    box-shadow: 0 0 0 6px rgba(255,212,59,.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 27px;
-    cursor: pointer;
-    user-select: none;
-}
-
-#complete {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    background: rgba(0,0,0,.72);
-    align-items: center;
-    justify-content: center;
-}
-
-.card {
-    background: white;
-    width: 85%;
-    max-width: 380px;
-    padding: 30px;
-    border-radius: 25px;
-    text-align: center;
-}
-
-.card h1 {
-    color: #ed7b20;
-}
-
-.card button {
-    border: 0;
-    background: #ed7b20;
-    color: white;
-    padding: 13px 25px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: bold;
+.error {
+  color: #c0392b;
+  text-align: center;
+  padding: 30px;
+  max-width: 500px;
 }
 </style>
 </head>
@@ -143,27 +102,18 @@ canvas {
 
 <div id="viewer"></div>
 
-<div id="top">
-    <div class="badge">🐰 Chiku's Magical Market</div>
-    <div class="badge" id="counter">Found: 0 / 4</div>
+<div class="loading" id="loading">
+  Loading Chiku's Magical Market...
 </div>
 
-<div id="chiku">
-    <b>Chiku 🐰</b><br>
-    Swipe around and find the hidden objects!
+<div class="header">
+  <div class="title">🐰 Chiku's Magical Market</div>
+  <div class="score">Found: <span id="score">0</span> / 4</div>
 </div>
 
-<div id="message">
-    👆 Swipe left or right to explore the market
-</div>
-
-<div id="complete">
-    <div class="card">
-        <h1>🎉 Amazing!</h1>
-        <p>You found all the hidden objects!</p>
-        <p>🌟 Mission Complete 🌟</p>
-        <button onclick="location.reload()">Play Again</button>
-    </div>
+<div class="message">
+  <strong>Chiku 🐰</strong><br>
+  Swipe around and find the hidden objects!
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
@@ -173,344 +123,186 @@ canvas {
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1100
 );
+
+camera.position.set(0, 0, 0.1);
 
 const renderer = new THREE.WebGLRenderer({
-    antialias: true
+  antialias: true
 });
 
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
-);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-);
-
-document.getElementById("viewer")
-    .appendChild(renderer.domElement);
+document.getElementById("viewer").appendChild(renderer.domElement);
 
 
-/* =========================
-   LOAD 360 MARKET IMAGE
-========================= */
+/* 360 MARKET IMAGE */
 
 const loader = new THREE.TextureLoader();
 
 loader.load(
-    "market360.png",
+  "market360.png",
 
-    function(texture) {
+  function(texture) {
 
-        texture.colorSpace = THREE.SRGBColorSpace;
+    texture.colorSpace = THREE.SRGBColorSpace;
 
-        const geometry =
-            new THREE.SphereGeometry(
-                50,
-                64,
-                40
-            );
+    const geometry = new THREE.SphereGeometry(
+      100,
+      64,
+      40
+    );
 
-        /* Camera is inside the sphere */
-        geometry.scale(-1, 1, 1);
+    /* Turn sphere inside-out */
+    geometry.scale(-1, 1, 1);
 
-        const material =
-            new THREE.MeshBasicMaterial({
-                map: texture
-            });
+    const material = new THREE.MeshBasicMaterial({
+      map: texture
+    });
 
-        const panorama =
-            new THREE.Mesh(
-                geometry,
-                material
-            );
+    const sphere = new THREE.Mesh(
+      geometry,
+      material
+    );
 
-        scene.add(panorama);
+    scene.add(sphere);
 
-        createHotspots();
+    document.getElementById("loading").style.display = "none";
 
-        animate();
-    },
+    animate();
+  },
 
-    undefined,
+  undefined,
 
-    function() {
+  function(error) {
 
-        document.getElementById("chiku").innerHTML =
-            "<b>Chiku 🐰</b><br>" +
-            "I can't find market360.png. Please check the image filename.";
-    }
+    document.getElementById("loading").innerHTML =
+      '<div class="error">' +
+      '<h2>Oops! 🐰</h2>' +
+      '<p>I cannot find <b>market360.png</b>.</p>' +
+      '<p>Please make sure the image is uploaded in the same GitHub folder as index.html.</p>' +
+      '</div>';
+
+    console.error(error);
+  }
 );
 
 
-/* =========================
-   CAMERA ROTATION
-========================= */
+/* TOUCH / MOUSE CONTROL */
 
-let dragging = false;
+let isDragging = false;
 
-let previousX = 0;
-let previousY = 0;
+let startX = 0;
+let startY = 0;
 
-let yaw = 0;
-let pitch = 0;
+let rotationY = 0;
+let rotationX = 0;
 
-let targetYaw = 0;
-let targetPitch = 0;
+let startRotationY = 0;
+let startRotationX = 0;
+
 
 renderer.domElement.addEventListener(
-    "pointerdown",
-    function(e) {
+  "pointerdown",
+  function(event) {
 
-        dragging = true;
+    isDragging = true;
 
-        previousX = e.clientX;
-        previousY = e.clientY;
-    }
+    startX = event.clientX;
+    startY = event.clientY;
+
+    startRotationY = rotationY;
+    startRotationX = rotationX;
+
+    renderer.domElement.setPointerCapture(event.pointerId);
+  }
 );
+
 
 renderer.domElement.addEventListener(
-    "pointermove",
-    function(e) {
+  "pointermove",
+  function(event) {
 
-        if (!dragging) return;
+    if (!isDragging) return;
 
-        const dx =
-            e.clientX - previousX;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
 
-        const dy =
-            e.clientY - previousY;
+    rotationY =
+      startRotationY + dx * 0.005;
 
-        targetYaw -= dx * 0.003;
+    rotationX =
+      startRotationX + dy * 0.003;
 
-        targetPitch -= dy * 0.003;
-
-        targetPitch =
-            Math.max(
-                -1.4,
-                Math.min(1.4, targetPitch)
-            );
-
-        previousX = e.clientX;
-        previousY = e.clientY;
-    }
+    rotationX = Math.max(
+      -Math.PI / 2,
+      Math.min(Math.PI / 2, rotationX)
+    );
+  }
 );
+
+
+renderer.domElement.addEventListener(
+  "pointerup",
+  function() {
+
+    isDragging = false;
+
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "pointercancel",
+  function() {
+
+    isDragging = false;
+
+  }
+);
+
+
+/* RESIZE */
 
 window.addEventListener(
-    "pointerup",
-    function() {
-        dragging = false;
-    }
+  "resize",
+  function() {
+
+    camera.aspect =
+      window.innerWidth / window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+  }
 );
 
 
-/* =========================
-   HIDDEN OBJECTS
-========================= */
-
-const objects = [
-
-    {
-        name: "Apple",
-        emoji: "🍎",
-        message: "Great! You found the apple!",
-        position: new THREE.Vector3(8, 2, -30)
-    },
-
-    {
-        name: "Banana",
-        emoji: "🍌",
-        message: "Wonderful! You found the banana!",
-        position: new THREE.Vector3(-12, 0, -28)
-    },
-
-    {
-        name: "Mango",
-        emoji: "🥭",
-        message: "Amazing! You found the mango!",
-        position: new THREE.Vector3(25, 3, -18)
-    },
-
-    {
-        name: "Flowers",
-        emoji: "🌸",
-        message: "Beautiful! You found the flowers!",
-        position: new THREE.Vector3(-25, 2, -15)
-    }
-
-];
-
-let found = 0;
-
-
-/* =========================
-   CREATE HOTSPOTS
-========================= */
-
-function createHotspots() {
-
-    objects.forEach(function(item) {
-
-        const hotspot =
-            document.createElement("div");
-
-        hotspot.className = "hotspot";
-
-        hotspot.innerHTML = item.emoji;
-
-        document.body.appendChild(hotspot);
-
-        item.element = hotspot;
-
-        hotspot.addEventListener(
-            "pointerdown",
-            function(e) {
-
-                e.stopPropagation();
-
-                if (item.found) return;
-
-                item.found = true;
-
-                found++;
-
-                hotspot.style.display = "none";
-
-                document.getElementById(
-                    "counter"
-                ).innerText =
-                    "Found: " + found + " / 4";
-
-                document.getElementById(
-                    "chiku"
-                ).innerHTML =
-                    "<b>Chiku 🐰</b><br>" +
-                    item.message;
-
-                if (found === 4) {
-
-                    setTimeout(
-                        function() {
-
-                            document.getElementById(
-                                "complete"
-                            ).style.display = "flex";
-
-                        },
-                        600
-                    );
-                }
-
-            }
-        );
-    });
-}
-
-
-/* =========================
-   POSITION HOTSPOTS
-========================= */
-
-function updateHotspots() {
-
-    objects.forEach(function(item) {
-
-        if (!item.element || item.found)
-            return;
-
-        const position =
-            item.position.clone();
-
-        position.project(camera);
-
-        const x =
-            (position.x * .5 + .5) *
-            window.innerWidth;
-
-        const y =
-            (-position.y * .5 + .5) *
-            window.innerHeight;
-
-        /*
-        Hide objects that are behind
-        the camera.
-        */
-
-        if (position.z > 1) {
-
-            item.element.style.display =
-                "none";
-
-        } else {
-
-            item.element.style.display =
-                "flex";
-
-            item.element.style.left =
-                (x - 26) + "px";
-
-            item.element.style.top =
-                (y - 26) + "px";
-        }
-
-    });
-}
-
-
-/* =========================
-   ANIMATION
-========================= */
+/* ANIMATION */
 
 function animate() {
 
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    yaw +=
-        (targetYaw - yaw) * .12;
+  camera.rotation.order = "YXZ";
 
-    pitch +=
-        (targetPitch - pitch) * .12;
+  camera.rotation.y = rotationY;
 
-    camera.rotation.order = "YXZ";
+  camera.rotation.x = rotationX;
 
-    camera.rotation.y = yaw;
-
-    camera.rotation.x = pitch;
-
-    updateHotspots();
-
-    renderer.render(
-        scene,
-        camera
-    );
+  renderer.render(
+    scene,
+    camera
+  );
 }
-
-
-/* =========================
-   SCREEN RESIZE
-========================= */
-
-window.addEventListener(
-    "resize",
-    function() {
-
-        camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-    }
-);
 
 </script>
 
